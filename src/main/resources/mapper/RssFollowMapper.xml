@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pers.u8f23.mikan_rss_converter.entity.mapper.RssFollowMapper">
+    <resultMap type="pers.u8f23.mikan_rss_converter.entity.RssFollow" id="RssFollow">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="rssSite" column="rss_site" jdbcType="VARCHAR"/>
+        <result property="regexFilter" column="regex_filter" jdbcType="VARCHAR"/>
+        <result property="comment" column="comment" jdbcType="VARCHAR"/>
+        <result property="enabled" column="enabled" jdbcType="SMALLINT"/>
+        <result property="followAddedTime" column="follow_added_time" jdbcType="INTEGER"/>
+        <result property="followModifiedTime" column="follow_modified_time" jdbcType="INTEGER"/>
+        <result property="lastUpdateSucceedTime" column="last_update_succeed_time" jdbcType="INTEGER"/>
+        <result property="updateContinueFailCounter" column="update_continue_fail_counter" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="getFollowList" resultMap="RssFollow">
+        select
+        *
+        from rss_follows
+        <where>
+            <if test="true">
+                id >= #{fromId}
+            </if>
+            <if test="sitePrefix != null and sitePrefix != ''">
+                and rss_site like #{sitePrefix} || '%'
+            </if>
+            <if test="siteMatcher != null and siteMatcher != ''">
+                and rss_site like '%' || #{siteMatcher} ||'%'
+            </if>
+        </where>
+        limit #{pageSize}
+    </select>
+
+    <select id="getFollowById" resultMap="RssFollow">
+        select *
+        from rss_follows
+        where id = #{id}
+        limit 1
+    </select>
+
+    <insert id="addFollow">
+        insert into rss_follows(rss_site, regex_filter, comment)
+        values (#{rssSite}, #{regexFilter}, #{comment});
+    </insert>
+
+
+    <delete id="deleteFollowById">
+        delete
+        from rss_follows
+        where id = #{id}
+    </delete>
+</mapper>

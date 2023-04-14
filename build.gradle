@@ -20,6 +20,9 @@ addRepos(repositories) //增加代码仓库
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    // https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.1'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     // project lombok
@@ -31,6 +34,10 @@ dependencies {
     implementation 'org.dom4j:dom4j:2.1.4'
     // https://mvnrepository.com/artifact/com.alibaba.fastjson2/fastjson2
     implementation 'com.alibaba.fastjson2:fastjson2:2.0.27'
+    // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
+    implementation 'org.xerial:sqlite-jdbc:3.41.2.1'
+    // https://mvnrepository.com/artifact/org.mybatis/mybatis
+    implementation 'org.mybatis:mybatis:3.5.13'
 
 }
 

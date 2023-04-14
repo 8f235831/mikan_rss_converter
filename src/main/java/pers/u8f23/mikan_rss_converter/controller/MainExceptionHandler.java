@@ -10,14 +10,16 @@ import java.io.StringWriter;
 
 @ControllerAdvice
 @Slf4j
-public class MainExceptionHandler {
-    @ExceptionHandler(Exception.class)
-    @ResponseBody
-    public String error(Exception ex) {
-        log.error("Exception", ex);
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter writer = new PrintWriter(stringWriter);
-        ex.printStackTrace(writer);
-        return stringWriter.toString();
-    }
+public class MainExceptionHandler
+{
+	@ExceptionHandler (Exception.class)
+	@ResponseBody
+	public String error(Exception ex)
+	{
+		log.error("Exception", ex);
+		StringWriter stringWriter = new StringWriter();
+		PrintWriter writer = new PrintWriter(stringWriter);
+		ex.printStackTrace(writer);
+		return stringWriter.toString();
+	}
 }

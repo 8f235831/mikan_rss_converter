@@ -1,16 +1,23 @@
 package pers.u8f23.mikan_rss_converter.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import pers.u8f23.mikan_rss_converter.config.Cons;
 
 import java.util.Map;
 import java.util.TreeMap;
 
+@Service
 public class SiteCacheService {
     private static final Map<String, CacheItem> MAP = new TreeMap<>();
     private static final Object LOCK = new Object();
 
-    public final MainService mainService = new MainService();
+    private final MainService mainService;
+
+    public SiteCacheService(@Autowired MainService mainService){
+        this.mainService = mainService;
+    }
 
     public String getWithPut(String path) throws Exception {
         CacheItem result;
