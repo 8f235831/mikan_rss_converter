@@ -4,30 +4,80 @@
 	<meta charset="UTF-8">
 	<title>Mikan Project RSS Proxy Server Console</title>
 </head>
-<script type="importmap">
-{
-  "imports": {
-    "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
-  }
-}
-</script>
 <body>
-<div id="app">{{ message }}</div>
+<div id="app">{{message}}</div>
+<label>
+	<input
+		:value="sitePrefixInput"
+		@input="setSitePrefix"
+		placeholder="site prefix"
+	/>
+	<input
+		:value="siteMatcherInput"
+		@input="setSiteMatcher"
+		placeholder="site contains"
+	/>
+</label>
 
 </body>
 <script type="module">
-	import {createApp} from 'vue'
+	import {createApp} from './js/lib/vue.esm-browser.js'
+	import {get} from './js/request.js'
 
 	createApp({
+		el: "#app",
 		data() {
 			return {
-				message: 'Hello Vue!'
+				message: 'Hello Vue!',
+				followList: [],
+				fromId: 0,
+				sitePrefixInput: '',
+				siteMatcherInput: ''
 			}
 		},
-		methods:{
-			loadRssList(){
-				// TODO
+		methods: {
+			loadFollowList() {
+				get(
+					'/rss/follow/list',
+					{
+						fromId: this.fromId,
+						pageSize: 20,
+						sitePrefix: this.sitePrefixInput,
+						siteMatcher: this.siteMatcherInput
+					},
+					(code, msg, body) => {
+						let newFromId = -1;
+						for (let followItem in body) {
+							this.followList.push(followItem);
+							newFromId = newFromId > followItem.id ? followItem.id : newFromId;
+						}
+						if (this.fromId >= 0) {
+							this.fromId = newFromId;
+						}
+					},
+					(body) => {
+						if (body == null) {
+							throw new Error('Body of response is null.');
+						}
+						// TODO verify
+					},
+					(error) => {
+						alert('Error!');
+						console.log(error);
+					}
+				);
+			},
+			setSitePrefix(event) {
+				this.sitePrefixInput = event.target.value;
+				this.fromId = 0;
+			},
+			setSiteMatcher(event) {
+				this.siteMatcherInput = event.target.value;
+				this.fromId = 0;
 			}
+		},
+		mounted() {
+			this.loadFollowList()
 		}
 	}).mount('#app')
 </script>

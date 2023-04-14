@@ -9,12 +9,12 @@ import pers.u8f23.mikan_rss_converter.service.RssService;
 import java.util.List;
 
 @RestController
-@RequestMapping ("rss")
-public class RSSController
+@RequestMapping ("rss/follow")
+public class RSSFollowController
 {
 	private final RssService rssService;
 
-	public RSSController(
+	public RSSFollowController(
 		@Autowired RssService rssService
 	)
 	{
@@ -23,7 +23,7 @@ public class RSSController
 
 	@ResponseBody
 	@RequestMapping (
-		path = "followList",
+		path = "list",
 		method = RequestMethod.GET
 	)
 	public BaseResponse<List<RssFollow>> getFollowList(
@@ -44,7 +44,7 @@ public class RSSController
 
 	@ResponseBody
 	@RequestMapping (
-		path = "getFollow",
+		path = "get",
 		method = RequestMethod.GET
 	)
 	public BaseResponse<RssFollow> getFollowById(
@@ -55,7 +55,7 @@ public class RSSController
 
 	@ResponseBody
 	@RequestMapping (
-		path = "deleteFollow",
+		path = "delete",
 		method = RequestMethod.GET
 	)
 	public BaseResponse<Object> deleteFollowById(
@@ -67,7 +67,7 @@ public class RSSController
 
 	@ResponseBody
 	@RequestMapping (
-		path = "addFollow",
+		path = "add",
 		method = RequestMethod.GET
 	)
 	public BaseResponse<Object> addFollow(
