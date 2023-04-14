@@ -1,3 +1,9 @@
+buildscript {
+    apply from: './define.gradle'
+    //noinspection GroovyAssignabilityCheck
+    addRepos(repositories) //增加代码仓库
+}
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.0.5'
@@ -8,17 +14,9 @@ group = 'pers.u8f23'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
-repositories {
-    mavenLocal()
-    maven { url 'https://maven.aliyun.com/repository/public/' }
-    maven { url 'https://maven.aliyun.com/repository/spring/' }
-    maven { url 'https://maven.aliyun.com/repository/spring-plugin' }
-    maven { url 'https://maven.aliyun.com/repository/google' }
-    maven { url 'https://maven.aliyun.com/repository/gradle-plugin?' }
-    maven { url 'https://maven.aliyun.com/repository/grails-core' }
-    maven { url 'https://maven.aliyun.com/repository/apache-snapshots' }
-    mavenCentral()
-}
+apply from: './define.gradle'
+//noinspection GroovyAssignabilityCheck
+addRepos(repositories) //增加代码仓库
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
