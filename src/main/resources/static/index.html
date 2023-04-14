@@ -5,20 +5,23 @@
 	<title>Mikan Project RSS Proxy Server Console</title>
 </head>
 <body>
-<div id="app">{{message}}</div>
-<label>
-	<input
-		:value="sitePrefixInput"
-		@input="setSitePrefix"
-		placeholder="site prefix"
-	/>
-	<input
-		:value="siteMatcherInput"
-		@input="setSiteMatcher"
-		placeholder="site contains"
-	/>
-</label>
-
+<div id="app">
+	<span>{{message}}</span>
+	<label>
+		<input
+			:value="sitePrefixInput"
+			@input="setSitePrefix"
+			placeholder="site prefix"
+		/>
+	</label>
+	<label>
+		<input
+			:value="siteMatcherInput"
+			@input="setSiteMatcher"
+			placeholder="site contains"
+		/>
+	</label>
+</div>
 </body>
 <script type="module">
 	import {createApp} from './js/lib/vue.esm-browser.js'
@@ -69,10 +72,12 @@
 			},
 			setSitePrefix(event) {
 				this.sitePrefixInput = event.target.value;
+				console.log("sitePrefixInput:" + this.sitePrefixInput);
 				this.fromId = 0;
 			},
 			setSiteMatcher(event) {
 				this.siteMatcherInput = event.target.value;
+				console.log("siteMatcherInput:" + this.siteMatcherInput);
 				this.fromId = 0;
 			}
 		},
