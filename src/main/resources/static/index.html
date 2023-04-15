@@ -66,6 +66,36 @@
 								</el-col>
 							</el-row>
 						</el-form>
+						<el-row :gutter="20" style="margin-left: 30px">
+							<el-col :span="2">
+								<el-popconfirm
+									width="220"
+									confirm-button-text="确认"
+									cancel-button-text="取消"
+									:icon="InfoFilled"
+									icon-color="#626AEF"
+									title="是否确认修改？"
+									@confirm="onExpandedFollowItemModifyConfirmed">
+									<template #reference>
+										<el-button type="primary">修改</el-button>
+									</template>
+								</el-popconfirm>
+							</el-col>
+							<el-col :span="2">
+								<el-popconfirm
+									width="220"
+									confirm-button-text="确认"
+									cancel-button-text="取消"
+									:icon="InfoFilled"
+									icon-color="#626AEF"
+									title="是否确认删除？"
+									@confirm="onExpandedFollowItemDeleteConfirmed">
+									<template #reference>
+										<el-button type="danger">删除</el-button>
+									</template>
+								</el-popconfirm>
+							</el-col>
+						</el-row>
 					</template>
 				</el-table-column>
 				<el-table-column prop="id" label="ID" width="50"></el-table-column>
@@ -338,6 +368,11 @@
 			},
 			mapRowId(row) {
 				return row.id;
+			},
+			onExpandedFollowItemModifyConfirmed() {
+				// TODO
+			}, onExpandedFollowItemDeleteConfirmed() {
+				// TODO
 			}
 		},
 		computed: {
