@@ -30,6 +30,7 @@
 			<th>注释</th>
 			<th>状态</th>
 			<th>添加时间</th>
+			<th>变动时间</th>
 			<th>最近成功访问时间</th>
 			<th>连续访问失败计数</th>
 		</tr>
@@ -49,7 +50,8 @@
 </body>
 <script type="module">
 	import {createApp} from './js/lib/vue.esm-browser.js'
-	import {get} from './js/request.js'
+	import {getFull} from './js/request.js'
+	import {verifyFollowList} from "./js/indexUtils.js";
 
 	createApp({
 		el: "#app",
@@ -64,7 +66,7 @@
 		},
 		methods: {
 			loadFollowList() {
-				get(
+				getFull(
 					'/rss/follow/list',
 					{
 						fromId: this.fromId,
@@ -83,26 +85,30 @@
 							this.fromId = newFromId;
 						}
 					},
-					(body) => {
-						if (body == null) {
-							throw new Error('Body of response is null.');
-						}
-						// TODO verify
+					(error) => {
+						alert('网络异常！');
+						console.log(error);
 					},
 					(error) => {
-						alert('Error!');
+						alert('处理异常！');
 						console.log(error);
+					},
+					(body) => {
+						verifyFollowList(body);
+					},
+					(error, body) => {
+						alert('非法数据！');
+						console.log(error);
+						console.log(body)
 					}
 				);
 			},
 			setSitePrefix(event) {
 				this.sitePrefixInput = event.target.value;
-				console.log("sitePrefixInput:" + this.sitePrefixInput);
 				this.fromId = 0;
 			},
 			setSiteMatcher(event) {
 				this.siteMatcherInput = event.target.value;
-				console.log("siteMatcherInput:" + this.siteMatcherInput);
 				this.fromId = 0;
 			},
 			formatDate(unixTimestamp) {

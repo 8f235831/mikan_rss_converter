@@ -24,7 +24,7 @@ export function getFull(
 				let body = response.data.body;
 				if (code === undefined) {
 					if (onValidateFailure != null) {
-						onValidateFailure(new Error('Code in response is undefined!'));
+						onValidateFailure(new Error('Code in response is undefined!'), body);
 					}
 					return;
 				}
@@ -78,7 +78,7 @@ export function get(
 			onError('[' + code + ']: ' + msg);
 		}),
 		verify,
-		(error => {
+		((error) => {
 			console.log(error);
 			onError(null);
 		})
