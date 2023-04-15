@@ -22,51 +22,65 @@
 								:border="true" :row-key="mapRowId"
 								@expand-change="handleFollowDialogExpandChange"
 								:expand-row-keys="calcExpandRowIds">
-				<el-table-column type="expand">
+				<el-table-column type="expand" label="更改">
 					<template #default="props">
 						<el-form
 							:model="modifyFollowForm"
-							:rules="addFollowFormRules"
-							label-width="60px">
-							<el-form-item label="RSS源" prop="rssSite">
-								<el-input
-									v-model="modifyFollowForm.rssSite"
-									placeholder="https://exampleRss.com/path"
-									maxlength="255"
-									show-word-limit
-									clearable></el-input>
-							</el-form-item>
-							<el-form-item label="Regex">
-								<el-input
-									v-model="modifyFollowForm.regexFilter"
-									placeholder=".*"
-									maxlength="255"
-									show-word-limit
-									clearable></el-input>
-							</el-form-item>
-							<el-form-item label="注释">
-								<el-input
-									v-model="modifyFollowForm.comment"
-									placeholder="注释"
-									maxlength="255"
-									show-word-limit
-									clearable></el-input>
-							</el-form-item>
-							<el-form-item label="状态">
-								<el-switch v-model="mapModifyFollowFormEnableToBoolean">
-								</el-switch>
-							</el-form-item>
+							:rules="addFollowFormRules">
+							<el-row :gutter="20" style="margin-left: 30px">
+								<el-col :span="7">
+									<el-form-item label="RSS源" prop="rssSite">
+										<el-input
+											v-model="modifyFollowForm.rssSite"
+											placeholder="https://exampleRss.com/path"
+											maxlength="255"
+											show-word-limit
+											clearable></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="7">
+									<el-form-item label="Regex">
+										<el-input
+											v-model="modifyFollowForm.regexFilter"
+											placeholder=".*"
+											maxlength="255"
+											show-word-limit
+											clearable></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="7">
+									<el-form-item label="注释">
+										<el-input
+											v-model="modifyFollowForm.comment"
+											placeholder="注释"
+											maxlength="255"
+											show-word-limit
+											clearable></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="3">
+									<el-form-item label="状态">
+										<el-switch v-model="mapModifyFollowFormEnableToBoolean">
+										</el-switch>
+									</el-form-item>
+								</el-col>
+							</el-row>
 						</el-form>
 					</template>
 				</el-table-column>
 				<el-table-column prop="id" label="ID" width="50"></el-table-column>
 				<el-table-column prop="rssSite" label="网站源"></el-table-column>
-				<el-table-column prop="regexFilter" label="Regex"></el-table-column>
+				<el-table-column label="Regex">
+					<template #default="scope">
+						<span type="success" v-if="scope.row.regexFilter !== ''">{{scope.row.regexFilter}}</span>
+						<el-tag type="info" v-else>未应用</el-tag>
+					</template>
+				</el-table-column>
 				<el-table-column prop="comment" label="注释"></el-table-column>
 				<el-table-column label="状态" width="80">
 					<template #default="scope">
 						<el-tag type="success" v-if="scope.row.enabled">启用</el-tag>
-						<el-tag v-else>关闭</el-tag>
+						<el-tag type="warning" v-else>停用</el-tag>
 					</template>
 				</el-table-column>
 				<el-table-column prop="followAddedTime" label="添加时间" :formatter="followAddedDateFormatter">
@@ -295,7 +309,6 @@
 				);
 			},
 			handleFollowDialogExpandChange(row, expandedRows) {
-				console.log("handleFollowDialogExpandChange:", row, expandedRows);
 				for (const rowIndex in expandedRows) {
 					if (expandedRows[rowIndex].id === row.id) {
 						this.setExpandedRow(row);
