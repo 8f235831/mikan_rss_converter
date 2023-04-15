@@ -19,7 +19,46 @@
 			</el-button>
 			<hr/>
 			<el-table :data="followList" style="width: 100%" v-loading="followListLoading"
-								:border="true">
+								:border="true" :row-key="mapRowId"
+								@expand-change="handleFollowDialogExpandChange"
+								:expand-row-keys="calcExpandRowIds">
+				<el-table-column type="expand">
+					<template #default="props">
+						<el-form
+							:model="modifyFollowForm"
+							:rules="addFollowFormRules"
+							label-width="60px">
+							<el-form-item label="RSS源" prop="rssSite">
+								<el-input
+									v-model="modifyFollowForm.rssSite"
+									placeholder="https://exampleRss.com/path"
+									maxlength="255"
+									show-word-limit
+									clearable></el-input>
+							</el-form-item>
+							<el-form-item label="Regex">
+								<el-input
+									v-model="modifyFollowForm.regexFilter"
+									placeholder=".*"
+									maxlength="255"
+									show-word-limit
+									clearable></el-input>
+							</el-form-item>
+							<el-form-item label="注释">
+								<el-input
+									v-model="modifyFollowForm.comment"
+									placeholder="注释"
+									maxlength="255"
+									show-word-limit
+									clearable></el-input>
+							</el-form-item>
+							<el-form-item label="状态">
+								<el-switch v-model="mapModifyFollowFormEnableToBoolean">
+								</el-switch>
+							</el-form-item>
+						</el-form>
+					</template>
+				</el-table-column>
 				<el-table-column prop="id" label="ID" width="50"></el-table-column>
 				<el-table-column prop="rssSite" label="网站源"></el-table-column>
 				<el-table-column prop="regexFilter" label="Regex"></el-table-column>
@@ -53,7 +92,7 @@
 			<el-form
 				:model="addFollowForm"
 				:rules="addFollowFormRules"
-				label-width="120px">
+				label-width="60px">
 				<el-form-item label="RSS源" prop="rssSite">
 					<el-input
 						v-model="addFollowForm.rssSite"
@@ -129,6 +168,13 @@
 					rssSite: [
 						{validator: validateFollowRssSite, trigger: 'change'}
 					]
+				},
+				modifyFollowForm: {
+					id: -1,
+					rssSite: '',
+					regexFilter: '',
+					comment: '',
+					enabled: 0
 				}
 			}
 		},
@@ -247,11 +293,60 @@
 						this.addFollowDialogLoading = false;
 					}
 				);
+			},
+			handleFollowDialogExpandChange(row, expandedRows) {
+				console.log("handleFollowDialogExpandChange:", row, expandedRows);
+				for (const rowIndex in expandedRows) {
+					if (expandedRows[rowIndex].id === row.id) {
+						this.setExpandedRow(row);
+						return;
+					}
+				}
+				this.setExpandedRow(null);
+			},
+			setExpandedRow(row) {
+				if (row == null) {
+					this.modifyFollowForm = {
+						id: -1,
+						rssSite: '',
+						regexFilter: '',
+						comment: '',
+						enabled: 0
+					}
+					return;
+				}
+				this.modifyFollowForm = {
+					id: row.id,
+					rssSite: row.rssSite,
+					regexFilter: row.regexFilter,
+					comment: row.comment,
+					enabled: row.enabled
+				}
+			},
+			mapRowId(row) {
+				return row.id;
+			}
+		},
+		computed: {
+			calcExpandRowIds() {
+				if (this.modifyFollowForm.id === -1) {
+					return [];
+				}
+				return [this.modifyFollowForm.id];
+			},
+			mapModifyFollowFormEnableToBoolean() {
+				if (this.modifyFollowForm.enabled === 0) {
+					return false;
+				}
+				if (this.modifyFollowForm.enabled === 1) {
+					return true;
+				}
+				throw new Error();
 			}
 		},
 		mounted() {
 			this.loadFollowList()
-		}
+		},
 	});
 	app.use(ElementPlus);
 	app.mount('#app');
