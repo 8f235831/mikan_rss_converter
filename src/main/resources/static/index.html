@@ -29,21 +29,26 @@
 	</label>
 	<hr/>
 	<el-table :data="followList" style="width: 100%">
-		<el-table-column prop="id" label="ID" width="180"></el-table-column>
-		<el-table-column prop="rssSite" label="网站源" width="180"></el-table-column>
+		<el-table-column prop="id" label="ID"></el-table-column>
+		<el-table-column prop="rssSite" label="网站源"></el-table-column>
 		<el-table-column prop="regexFilter" label="Regex"></el-table-column>
 		<el-table-column prop="comment" label="注释"></el-table-column>
-		<el-table-column prop="enabled" label="状态"></el-table-column>
-		<el-table-column prop="followAddedTime" label="添加时间"></el-table-column>
-		<el-table-column prop="followModifiedTime" label="变动时间"></el-table-column>
-		<el-table-column prop="lastUpdateSucceedTime" label="最近成功访问时间"></el-table-column>
+		<el-table-column label="状态">
+			<template #default="scope">
+				{{ scope.row.enabled ? '启用' : '关闭' }}
+			</template>
+		</el-table-column>
+		<el-table-column prop="followAddedTime" label="添加时间" :formatter="addedDateFormatter">
+		</el-table-column>
+		<el-table-column prop="followModifiedTime" label="变动时间" :formatter="modifiedDateFormatter"></el-table-column>
+		<el-table-column prop="lastUpdateSucceedTime" label="最近成功访问时间" :formatter="lastUpdateDateFormatter"></el-table-column>
 		<el-table-column prop="updateContinueFailCounter" label="连续访问失败计数"></el-table-column>
 	</el-table>
 </div>
 </body>
 <script type="module">
 	import {getFull} from './js/request.js'
-	import {verifyFollowList} from "./js/indexUtils.js";
+	import {verifyFollowList, formatDate} from "./js/indexUtils.js";
 
 	const app = Vue.createApp({
 		el: "#app",
@@ -95,25 +100,16 @@
 				this.siteMatcherInput = event.target.value;
 				this.fromId = 0;
 			},
-			formatDate(unixTimestamp) {
-				console.log('unixTimestamp:' + unixTimestamp)
-				if (unixTimestamp == null || unixTimestamp === 0) {
-					return 'N/A';
-				}
-				const date = new Date(unixTimestamp * 1000);
-				const y = date.getFullYear();
-				let m = date.getMonth() + 1;
-				m = m < 10 ? ('0' + m) : m;
-				let d = date.getDate();
-				d = d < 10 ? ('0' + d) : d;
-				let h = date.getHours();
-				h = h < 10 ? ('0' + h) : h;
-				let minute = date.getMinutes();
-				minute = minute < 10 ? ('0' + minute) : minute;
-				let second = date.getSeconds();
-				second = second < 10 ? ('0' + second) : second;
-				return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
-			}
+			addedDateFormatter(row, column) {
+				return formatDate(row.followAddedTime);
+			},
+			modifiedDateFormatter(row, column) {
+				return formatDate(row.followModifiedTime);
+			},
+			lastUpdateDateFormatter(row, column) {
+				return formatDate(row.lastUpdateSucceedTime);
+			},
+
 		},
 		mounted() {
 			this.loadFollowList()
