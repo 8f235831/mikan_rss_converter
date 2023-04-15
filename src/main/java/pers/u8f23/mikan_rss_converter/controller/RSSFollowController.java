@@ -26,20 +26,9 @@ public class RSSFollowController
 		path = "list",
 		method = RequestMethod.GET
 	)
-	public BaseResponse<List<RssFollow>> getFollowList(
-		@RequestParam (value = "fromId")
-			long fromId,
-		@RequestParam (value = "pageSize")
-			int pageSize,
-		@RequestParam (value = "sitePrefix", required = false,
-		               defaultValue = "")
-			String sitePrefix,
-		@RequestParam (value = "siteMatcher", required = false,
-		               defaultValue = "")
-			String siteMatcher)
+	public BaseResponse<List<RssFollow>> getFollowList()
 	{
-		return rssService.getFollowList(fromId, pageSize, sitePrefix,
-			siteMatcher);
+		return rssService.getFollowList();
 	}
 
 	@ResponseBody
@@ -77,5 +66,23 @@ public class RSSFollowController
 	)
 	{
 		return rssService.addFollow(rssSite, regexFilter, comment);
+	}
+
+	@ResponseBody
+	@RequestMapping (
+		path = "modify",
+		method = RequestMethod.GET
+	)
+	public BaseResponse<Object> modifyFollowById(
+		@RequestParam ("id") long id,
+		@RequestParam (value = "rssSite", required = false) String rssSite,
+		@RequestParam (value = "regexFilter", required = false)
+			String regexFilter,
+		@RequestParam (value = "comment", required = false) String comment,
+		@RequestParam (value = "enabled", required = false) Integer enabled
+	)
+	{
+		return rssService.modifyFollowById(id, rssSite, regexFilter,
+			comment, enabled);
 	}
 }

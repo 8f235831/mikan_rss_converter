@@ -38,7 +38,10 @@ export function getFull(
 				if (code >= 0) {
 					if (verify != null) {
 						try {
-							verify(body);
+							const censoredData = verify(body);
+							if (censoredData !== undefined) {
+								body = censoredData;
+							}
 						} catch (e) {
 							if (onValidateFailure != null) {
 								onValidateFailure(e);

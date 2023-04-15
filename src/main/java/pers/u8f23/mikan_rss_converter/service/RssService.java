@@ -30,51 +30,10 @@ public class RssService
 		this.rssFollowMapper = rssFollowMapper;
 	}
 
-	public BaseResponse<List<RssFollow>> getFollowList(
-		long fromId,
-		int pageSize,
-		String sitePrefix,
-		String siteMatcher)
+	public BaseResponse<List<RssFollow>> getFollowList()
 	{
-		if (fromId < 0)
-		{
-			return ResponseCode.ILLEGAL_REQUEST_PARAM_FAILURE
-				.nullResponse("fromId < 0");
-		}
-		if (pageSize <= 0)
-		{
-			return ResponseCode.ILLEGAL_REQUEST_PARAM_FAILURE
-				.nullResponse("pageSize <= 0");
-		}
-		if (sitePrefix != null)
-		{
-			if (sitePrefix.isEmpty())
-			{
-				sitePrefix = null;
-
-			}
-			else if (SITE_ILLEGAL_PATTERN.matcher(sitePrefix).find())
-			{
-				return ResponseCode.ILLEGAL_REQUEST_PARAM_FAILURE
-					.nullResponse("Illegal param [sitePrefix]");
-			}
-		}
-		if (siteMatcher != null)
-		{
-			if (siteMatcher.isEmpty())
-			{
-				siteMatcher = null;
-			}
-			else if (SITE_ILLEGAL_PATTERN.matcher(siteMatcher).find())
-			{
-				return ResponseCode.ILLEGAL_REQUEST_PARAM_FAILURE
-					.nullResponse("Illegal param [siteMatcher]");
-			}
-		}
-		log.debug("RssFollowMapper.getFollowList({}, {}, {}, {})",
-			fromId, pageSize, sitePrefix, siteMatcher);
 		List<RssFollow> result = rssFollowMapper
-			.getFollowList(fromId, pageSize, sitePrefix, siteMatcher);
+			.getFollowList();
 		return ResponseCode.DEFAULT_SUCCESS.bodyResponse(result);
 	}
 
@@ -130,6 +89,26 @@ public class RssService
 				.nullResponse("id < 0");
 		}
 		rssFollowMapper.deleteFollowById(id);
+		return ResponseCode.DEFAULT_SUCCESS.nullResponse();
+	}
+
+	public BaseResponse<Object> modifyFollowById(
+		long id, String rssSite, String regexFilter,
+		String comment, Integer enabled
+	)
+	{
+		if (id < 0)
+		{
+			return ResponseCode.ILLEGAL_REQUEST_PARAM_FAILURE
+				.nullResponse("id < 0");
+		}
+		if (enabled != null && (enabled < 0 || enabled > 1))
+		{
+			return ResponseCode.ILLEGAL_REQUEST_PARAM_FAILURE
+				.nullResponse("enabled not in {0, 1}.");
+		}
+		rssFollowMapper.modifyFollowById(id, rssSite, regexFilter,
+			comment, enabled);
 		return ResponseCode.DEFAULT_SUCCESS.nullResponse();
 	}
 }
