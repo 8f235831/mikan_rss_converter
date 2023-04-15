@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 	<meta charset="UTF-8">
-	<title>Mikan Project RSS Proxy Server Console</title>
+	<title>Mikan Project RSS 缓存服务器后台</title>
 </head>
 <body>
 <div id="app">
@@ -21,6 +21,30 @@
 			placeholder="site contains"
 		/>
 	</label>
+	<hr/>
+	<table>
+		<tr>
+			<th>ID</th>
+			<th>网站源</th>
+			<th>Regex</th>
+			<th>注释</th>
+			<th>状态</th>
+			<th>添加时间</th>
+			<th>最近成功访问时间</th>
+			<th>连续访问失败计数</th>
+		</tr>
+		<tr v-for="followItem of followList">
+			<td>{{followItem.id}}</td>
+			<td>{{followItem.rssSite}}</td>
+			<td>{{followItem.regexFilter}}</td>
+			<td>{{followItem.comment}}</td>
+			<td>{{followItem.enabled==1 ? '启用':'关闭'}}</td>
+			<td>{{formatDate(followItem.followAddedTime)}}</td>
+			<td>{{formatDate(followItem.followModifiedTime)}}</td>
+			<td>{{formatDate(followItem.lastUpdateSucceedTime)}}</td>
+			<td>{{followItem.updateContinueFailCounter}}</td>
+		</tr>
+	</table>
 </div>
 </body>
 <script type="module">
@@ -49,9 +73,10 @@
 						siteMatcher: this.siteMatcherInput
 					},
 					(code, msg, body) => {
+						console.log(body)
+						this.followList = this.followList.concat(body);
 						let newFromId = -1;
 						for (let followItem in body) {
-							this.followList.push(followItem);
 							newFromId = newFromId > followItem.id ? followItem.id : newFromId;
 						}
 						if (this.fromId >= 0) {
@@ -79,6 +104,25 @@
 				this.siteMatcherInput = event.target.value;
 				console.log("siteMatcherInput:" + this.siteMatcherInput);
 				this.fromId = 0;
+			},
+			formatDate(unixTimestamp) {
+				console.log('unixTimestamp:' + unixTimestamp)
+				if (unixTimestamp == null || unixTimestamp === 0) {
+					return 'N/A';
+				}
+				const date = new Date(unixTimestamp * 1000);
+				const y = date.getFullYear();
+				let m = date.getMonth() + 1;
+				m = m < 10 ? ('0' + m) : m;
+				let d = date.getDate();
+				d = d < 10 ? ('0' + d) : d;
+				let h = date.getHours();
+				h = h < 10 ? ('0' + h) : h;
+				let minute = date.getMinutes();
+				minute = minute < 10 ? ('0' + minute) : minute;
+				let second = date.getSeconds();
+				second = second < 10 ? ('0' + second) : second;
+				return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
 			}
 		},
 		mounted() {
