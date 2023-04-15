@@ -3,10 +3,16 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Mikan Project RSS 缓存服务器后台</title>
+	<!-- Import style -->
+	<link rel="stylesheet" href="./css/lib/element.css"/>
+	<!-- Import Vue 3 -->
+	<script src="./js/lib/vue.global.js"></script>
+	<!-- Import component library -->
+	<script src="./js/lib/element.full.js"></script>
 </head>
 <body>
 <div id="app">
-	<span>{{message}}</span>
+	<span>{{ message }}</span>
 	<label>
 		<input
 			:value="sitePrefixInput"
@@ -22,44 +28,29 @@
 		/>
 	</label>
 	<hr/>
-	<table>
-		<tr>
-			<th>ID</th>
-			<th>网站源</th>
-			<th>Regex</th>
-			<th>注释</th>
-			<th>状态</th>
-			<th>添加时间</th>
-			<th>变动时间</th>
-			<th>最近成功访问时间</th>
-			<th>连续访问失败计数</th>
-		</tr>
-		<tr v-for="followItem of followList">
-			<td>{{followItem.id}}</td>
-			<td>{{followItem.rssSite}}</td>
-			<td>{{followItem.regexFilter}}</td>
-			<td>{{followItem.comment}}</td>
-			<td>{{followItem.enabled==1 ? '启用':'关闭'}}</td>
-			<td>{{formatDate(followItem.followAddedTime)}}</td>
-			<td>{{formatDate(followItem.followModifiedTime)}}</td>
-			<td>{{formatDate(followItem.lastUpdateSucceedTime)}}</td>
-			<td>{{followItem.updateContinueFailCounter}}</td>
-		</tr>
-	</table>
+	<el-table :data="followList" style="width: 100%">
+		<el-table-column prop="id" label="ID" width="180"></el-table-column>
+		<el-table-column prop="rssSite" label="网站源" width="180"></el-table-column>
+		<el-table-column prop="regexFilter" label="Regex"></el-table-column>
+		<el-table-column prop="comment" label="注释"></el-table-column>
+		<el-table-column prop="enabled" label="状态"></el-table-column>
+		<el-table-column prop="followAddedTime" label="添加时间"></el-table-column>
+		<el-table-column prop="followModifiedTime" label="变动时间"></el-table-column>
+		<el-table-column prop="lastUpdateSucceedTime" label="最近成功访问时间"></el-table-column>
+		<el-table-column prop="updateContinueFailCounter" label="连续访问失败计数"></el-table-column>
+	</el-table>
 </div>
 </body>
 <script type="module">
-	import {createApp} from './js/lib/vue.esm-browser.js'
 	import {getFull} from './js/request.js'
 	import {verifyFollowList} from "./js/indexUtils.js";
 
-	createApp({
+	const app = Vue.createApp({
 		el: "#app",
 		data() {
 			return {
 				message: 'Hello Vue!',
 				followList: [],
-				fromId: 0,
 				sitePrefixInput: '',
 				siteMatcherInput: ''
 			}
@@ -69,21 +60,14 @@
 				getFull(
 					'/rss/follow/list',
 					{
-						fromId: this.fromId,
-						pageSize: 20,
+						fromId: 0,
+						pageSize: 100,
 						sitePrefix: this.sitePrefixInput,
 						siteMatcher: this.siteMatcherInput
 					},
 					(code, msg, body) => {
 						console.log(body)
-						this.followList = this.followList.concat(body);
-						let newFromId = -1;
-						for (let followItem in body) {
-							newFromId = newFromId > followItem.id ? followItem.id : newFromId;
-						}
-						if (this.fromId >= 0) {
-							this.fromId = newFromId;
-						}
+						this.followList = body;
 					},
 					(error) => {
 						alert('网络异常！');
@@ -134,7 +118,9 @@
 		mounted() {
 			this.loadFollowList()
 		}
-	}).mount('#app')
+	});
+	app.use(ElementPlus);
+	app.mount('#app')
 </script>
 
 
