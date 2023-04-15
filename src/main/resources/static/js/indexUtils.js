@@ -51,7 +51,6 @@ export function verifyFollowList(list) {
 }
 
 export function formatDate(unixTimestamp) {
-	console.log('unixTimestamp:' + unixTimestamp)
 	if (typeof unixTimestamp !== 'number' || unixTimestamp <= 0) {
 		return 'N/A';
 	}

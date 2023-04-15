@@ -12,52 +12,121 @@
 </head>
 <body>
 <div id="app">
-	<span>{{ message }}</span>
-	<label>
-		<input
-			:value="sitePrefixInput"
-			@input="setSitePrefix"
-			placeholder="site prefix"
-		/>
-	</label>
-	<label>
-		<input
-			:value="siteMatcherInput"
-			@input="setSiteMatcher"
-			placeholder="site contains"
-		/>
-	</label>
-	<hr/>
-	<el-table :data="followList" style="width: 100%">
-		<el-table-column prop="id" label="ID"></el-table-column>
-		<el-table-column prop="rssSite" label="网站源"></el-table-column>
-		<el-table-column prop="regexFilter" label="Regex"></el-table-column>
-		<el-table-column prop="comment" label="注释"></el-table-column>
-		<el-table-column label="状态">
-			<template #default="scope">
-				{{ scope.row.enabled ? '启用' : '关闭' }}
-			</template>
-		</el-table-column>
-		<el-table-column prop="followAddedTime" label="添加时间" :formatter="addedDateFormatter">
-		</el-table-column>
-		<el-table-column prop="followModifiedTime" label="变动时间" :formatter="modifiedDateFormatter"></el-table-column>
-		<el-table-column prop="lastUpdateSucceedTime" label="最近成功访问时间" :formatter="lastUpdateDateFormatter"></el-table-column>
-		<el-table-column prop="updateContinueFailCounter" label="连续访问失败计数"></el-table-column>
-	</el-table>
+	<el-tabs v-model="mainTab" class="demo-tabs">
+		<el-tab-pane label="关注" name="follow">
+			<el-button type="primary" @click="addFollowDialogVisible = true">
+				添加关注
+			</el-button>
+			<hr/>
+			<el-table :data="followList" style="width: 100%">
+				<el-table-column prop="id" label="ID" width="50"></el-table-column>
+				<el-table-column prop="rssSite" label="网站源"></el-table-column>
+				<el-table-column prop="regexFilter" label="Regex"></el-table-column>
+				<el-table-column prop="comment" label="注释"></el-table-column>
+				<el-table-column label="状态" width="80">
+					<template #default="scope">
+						{{ scope.row.enabled ? '启用' : '关闭' }}
+					</template>
+				</el-table-column>
+				<el-table-column prop="followAddedTime" label="添加时间" :formatter="followAddedDateFormatter">
+				</el-table-column>
+				<el-table-column prop="followModifiedTime" label="变动时间"
+												 :formatter="followModifiedDateFormatter"></el-table-column>
+				<el-table-column prop="lastUpdateSucceedTime" label="最近成功访问时间" :formatter="followLastUpdateDateFormatter">
+				</el-table-column>
+				<el-table-column prop="updateContinueFailCounter" label="连续访问失败计数" width="80"></el-table-column>
+			</el-table>
+		</el-tab-pane>
+	</el-tabs>
+	<el-dialog
+		v-model="addFollowDialogVisible"
+		title="Tips"
+		width="30%"
+		destroy-on-close
+	>
+		<template #header="">
+			<span>添加关注</span>
+		</template>
+		<div v-loading="addFollowDialogLoading">
+			<el-form
+				:model="addFollowForm"
+				:rules="addFollowFormRules"
+				label-width="120px">
+				<el-form-item label="RSS源" prop="rssSite">
+					<el-input
+						v-model="addFollowForm.rssSite"
+						placeholder="https://exampleRss.com/path"
+						maxlength="255"
+						show-word-limit
+						clearable></el-input>
+				</el-form-item>
+				<el-form-item label="Regex">
+					<el-input
+						v-model="addFollowForm.regexFilter"
+						placeholder=".*"
+						maxlength="255"
+						show-word-limit
+						clearable></el-input>
+				</el-form-item>
+				<el-form-item label="注释">
+					<el-input
+						v-model="addFollowForm.comment"
+						placeholder="注释"
+						maxlength="255"
+						show-word-limit
+						clearable></el-input>
+				</el-form-item>
+			</el-form>
+		</div>
+		<template #footer>
+      <span class="dialog-footer">
+        <el-button @click="addFollowDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleAddFollowDialogConfirm()">确认</el-button>
+      </span>
+		</template>
+	</el-dialog>
 </div>
 </body>
 <script type="module">
 	import {getFull} from './js/request.js'
 	import {verifyFollowList, formatDate} from "./js/indexUtils.js";
 
+	function validateFollowRssSite(rule, value, callback) {
+		console.log("value:" + value)
+		if (typeof value !== 'string' || value.length === 0) {
+			callback(new Error('请输入RSS源网站。'));
+			return;
+		}
+		const matchResult = value.match(/http(s)?:\/\/.+\/.*/);
+		if (matchResult == null || matchResult.length <= 0) {
+			callback(new Error('RSS源网站不符合规范。'));
+			return;
+		}
+		if (value !== matchResult[0]) {
+			callback(new Error('RSS源网站不符合规范。'));
+			return;
+		}
+		callback()
+	}
+
 	const app = Vue.createApp({
 		el: "#app",
 		data() {
 			return {
-				message: 'Hello Vue!',
+				mainTab: 'follow',
 				followList: [],
-				sitePrefixInput: '',
-				siteMatcherInput: ''
+				addFollowDialogVisible: false,
+				addFollowDialogLoading: false,
+				addFollowForm: {
+					rssSite: '',
+					regexFilter: '',
+					comment: ''
+				},
+				addFollowFormRules: {
+					rssSite: [
+						{validator: validateFollowRssSite, trigger: 'change'}
+					]
+				}
 			}
 		},
 		methods: {
@@ -66,57 +135,131 @@
 					'/rss/follow/list',
 					{
 						fromId: 0,
-						pageSize: 100,
-						sitePrefix: this.sitePrefixInput,
-						siteMatcher: this.siteMatcherInput
+						pageSize: 500,
+						sitePrefix: '',
+						siteMatcher: ''
 					},
 					(code, msg, body) => {
-						console.log(body)
+						// console.log(body)
 						this.followList = body;
 					},
 					(error) => {
-						alert('网络异常！');
+						ElNotification({
+							title: '网络异常',
+							message: '未能成功完成请求。',
+							type: 'error',
+						});
 						console.log(error);
 					},
 					(error) => {
-						alert('处理异常！');
+						ElNotification({
+							title: '请求错误',
+							message: '服务器拒绝了此非法请求。',
+							type: 'error',
+						});
 						console.log(error);
 					},
 					(body) => {
 						verifyFollowList(body);
 					},
 					(error, body) => {
-						alert('非法数据！');
+						ElNotification({
+							title: '数据异常',
+							message: '无法解析服务器返回的数据。',
+							type: 'error',
+						});
 						console.log(error);
 						console.log(body)
+					},
+					() => {
+						// finally nop
 					}
 				);
 			},
-			setSitePrefix(event) {
-				this.sitePrefixInput = event.target.value;
-				this.fromId = 0;
-			},
-			setSiteMatcher(event) {
-				this.siteMatcherInput = event.target.value;
-				this.fromId = 0;
-			},
-			addedDateFormatter(row, column) {
+			followAddedDateFormatter(row, column) {
 				return formatDate(row.followAddedTime);
 			},
-			modifiedDateFormatter(row, column) {
+			followModifiedDateFormatter(row, column) {
 				return formatDate(row.followModifiedTime);
 			},
-			lastUpdateDateFormatter(row, column) {
+			followLastUpdateDateFormatter(row, column) {
 				return formatDate(row.lastUpdateSucceedTime);
 			},
+			handleAddFollowDialogConfirm() {
+				const rssSite = this.addFollowForm.rssSite;
+				const regexFilter = this.addFollowForm.regexFilter;
+				const comment = this.addFollowForm.comment;
 
+				if (!(rssSite.match(/http(s)?:\/\/.+\/.*/) != null)) {
+					ElMessage({
+						message: '请确保数据正确！',
+						type: 'warning',
+					});
+					return;
+				}
+				this.addFollowDialogLoading = true;
+				getFull(
+					'/rss/follow/add',
+					{
+						rssSite: rssSite,
+						regexFilter: regexFilter,
+						comment: comment
+					},
+					() => {
+						ElMessage({
+							message: '添加成功！',
+							type: 'success',
+						});
+						this.addFollowDialogVisible = false;
+						this.addFollowForm.rssSite = '';
+						this.addFollowForm.regexFilter = '';
+						this.addFollowForm.comment = '';
+						this.loadFollowList();
+					},
+					(error) => {
+						ElNotification({
+							title: '网络异常',
+							message: '未能成功完成请求。',
+							type: 'error',
+						});
+						console.log(error);
+					},
+					(error) => {
+						ElNotification({
+							title: '请求错误',
+							message: '服务器拒绝了此非法请求。',
+							type: 'error',
+						});
+						console.log(error);
+					},
+					(body) => {
+						// nop
+					},
+					(error, body) => {
+						ElNotification({
+							title: '数据异常',
+							message: '无法解析服务器返回的数据。',
+							type: 'error',
+						});
+						console.log(error);
+						console.log(body)
+					},
+					() => {
+						this.addFollowDialogLoading = false;
+					}
+				);
+			}
 		},
 		mounted() {
 			this.loadFollowList()
 		}
 	});
 	app.use(ElementPlus);
-	app.mount('#app')
+	app.mount('#app');
+	const ElMessage = app.config.globalProperties.$message;
+	const ElNotification = app.config.globalProperties.$notify;
+
+
 </script>
 
 

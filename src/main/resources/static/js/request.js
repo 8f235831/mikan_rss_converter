@@ -7,7 +7,8 @@ export function getFull(
 	onWebFailure,
 	onResponseFailure,
 	verify,
-	onValidateFailure
+	onValidateFailure,
+	afterAll
 ) {
 	axios.get(path, {params: params})
 		.then(response => {
@@ -55,32 +56,14 @@ export function getFull(
 			}
 		)
 		.catch(function (error) {
-			onWebFailure(error);
-		});
-}
-
-export function get(
-	path,
-	params,
-	onSuccess,
-	verify,
-	onError) {
-	getFull(
-		path,
-		params,
-		onSuccess,
-		(error => {
-			console.log(error);
-			onError(null);
-		}),
-		((error, code, msg) => {
-			console.log(error);
-			onError('[' + code + ']: ' + msg);
-		}),
-		verify,
-		((error) => {
-			console.log(error);
-			onError(null);
+			if (onWebFailure != null) {
+				onWebFailure(error);
+			}
 		})
-	)
+		.finally(function () {
+				if (afterAll != null) {
+					afterAll();
+				}
+			}
+		);
 }
