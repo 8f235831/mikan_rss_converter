@@ -4,18 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pers.u8f23.mikan_rss_converter.entity.BaseResponse;
 import pers.u8f23.mikan_rss_converter.entity.RssFollow;
-import pers.u8f23.mikan_rss_converter.service.RssService;
+import pers.u8f23.mikan_rss_converter.service.RssFollowService;
 
 import java.util.List;
 
 @RestController
 @RequestMapping ("rss/follow")
-public class RSSFollowController
+public class RssFollowController
 {
-	private final RssService rssService;
+	private final RssFollowService rssService;
 
-	public RSSFollowController(
-		@Autowired RssService rssService
+	public RssFollowController(
+		@Autowired RssFollowService rssService
 	)
 	{
 		this.rssService = rssService;

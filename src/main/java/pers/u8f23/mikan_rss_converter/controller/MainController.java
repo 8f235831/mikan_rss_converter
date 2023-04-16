@@ -9,28 +9,9 @@ import pers.u8f23.mikan_rss_converter.service.MainService;
 @Controller
 public class MainController
 {
-	private final MainService mainService;
-
-	public MainController(
-		@Autowired MainService mainService
-	)
-	{
-		this.mainService = mainService;
-	}
-
 	@RequestMapping (path = "", method = RequestMethod.GET)
-	private String index()
+	public String index()
 	{
 		return "index.html";
-	}
-
-	@ResponseBody
-	@RequestMapping (path = "convert", method = RequestMethod.GET,
-	                 produces = "application/xml;charset=utf-8")
-	public String convert(@RequestParam (value = "srcUrl") String srcUrl) throws Exception
-	{
-		String src = mainService.getFromUrl(srcUrl);
-		RssDocument document = new RssDocument(src);
-		return document.toXml();
 	}
 }

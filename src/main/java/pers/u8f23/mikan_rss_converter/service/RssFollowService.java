@@ -3,7 +3,6 @@ package pers.u8f23.mikan_rss_converter.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import pers.u8f23.mikan_rss_converter.config.ResponseCode;
 import pers.u8f23.mikan_rss_converter.entity.BaseResponse;
 import pers.u8f23.mikan_rss_converter.entity.RssFollow;
@@ -18,14 +17,14 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 @Service
-public class RssService
+public class RssFollowService
 {
 	private static final Pattern SITE_ILLEGAL_PATTERN =
 		Pattern.compile("[%_\\[\\]]");
 
 	private final RssFollowMapper rssFollowMapper;
 
-	public RssService(@Autowired RssFollowMapper rssFollowMapper)
+	public RssFollowService(@Autowired RssFollowMapper rssFollowMapper)
 	{
 		this.rssFollowMapper = rssFollowMapper;
 	}

@@ -25,4 +25,6 @@ public interface RssFollowMapper
 
 	void modifyFollowById(long id, String rssSite, String regexFilter,
 		String comment, Integer enabled);
+
+	void notifyUpdate(long id, boolean success);
 }

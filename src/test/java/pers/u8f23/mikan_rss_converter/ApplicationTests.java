@@ -13,30 +13,23 @@ import java.io.InputStream;
 
 @SpringBootTest
 @Slf4j
-class ApplicationTests {
-    private static final String EXAMPLE_RSS_FILE_PATH = "src/test/resources/example_rss.xml";
+class ApplicationTests
+{
+	private static final String EXAMPLE_RSS_FILE_PATH =
+		"src/test/resources/example_rss.xml";
 
-    @Autowired
-    MainService mainService;
-
-    @Test
-    void testXmlParser() throws Exception {
-        byte[] fileBytes;
-        try (InputStream inputStream = new FileInputStream(EXAMPLE_RSS_FILE_PATH)) {
-            fileBytes = inputStream.readAllBytes();
-        }
-        String xmlContent = new String(fileBytes);
-        RssDocument document = new RssDocument(xmlContent);
-        String documentJson = JSON.toJSONString(document);
-        log.info("document: {}", documentJson);
-    }
-
-    @Test
-    void testXmlParserOnline() throws Exception {
-        String s = mainService.getFromUrl("https://mikanani.me/RSS/Bangumi?bangumiId=3028&subgroupid=382");
-        RssDocument document = new RssDocument(s);
-        String documentJson = JSON.toJSONString(document);
-        log.info("document: {}", documentJson);
-    }
-
+	@Test
+	void testXmlParser() throws Exception
+	{
+		byte[] fileBytes;
+		try (InputStream inputStream = new FileInputStream(
+			EXAMPLE_RSS_FILE_PATH))
+		{
+			fileBytes = inputStream.readAllBytes();
+		}
+		String xmlContent = new String(fileBytes);
+		RssDocument document = new RssDocument(xmlContent);
+		String documentJson = JSON.toJSONString(document);
+		log.info("document: {}", documentJson);
+	}
 }

@@ -15,8 +15,7 @@
 
     <!--通过实体作为筛选条件查询-->
     <select id="getFollowList" resultMap="RssFollow">
-        select
-        *
+        select *
         from rss_follows
     </select>
 
@@ -57,6 +56,20 @@
             follow_modified_time = (strftime('%s', 'now')),
             last_update_succeed_time = 0,
             update_continue_fail_counter = 0
+        </set>
+        where id =#{id}
+    </update>
+
+    <update id="notifyUpdate">
+        update rss_follows
+        <set>
+            <if test="'true'.toString() == success.toString()">
+                last_update_succeed_time = (strftime('%s', 'now')),
+                update_continue_fail_counter = 0
+            </if>
+            <if test="'true'.toString() != success.toString()">
+                update_continue_fail_counter = update_continue_fail_counter + 1
+            </if>
         </set>
         where id =#{id}
     </update>

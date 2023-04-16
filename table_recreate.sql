@@ -17,4 +17,6 @@ create unique index rss_follows_id_uindex
     on rss_follows (id);
 
 insert into rss_follows(rss_site, regex_filter, comment)
-values ('http://example.com', '', 'example')
+values ('https://mikanani.me/RSS/Bangumi?bangumiId=2966&subgroupid=370', '', '和山田谈场Lv999的恋爱'),
+       ('https://mikanani.me/RSS/Bangumi?bangumiId=3024&subgroupid=615', 'sentai', '可爱过头大危机'),
+       ('http://example.com/2', '2', 'example_2');

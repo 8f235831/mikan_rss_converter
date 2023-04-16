@@ -28,7 +28,7 @@ public class RssItem
 		XPath pubDatePath = itemNode.createXPath("//ns:pubDate");
 		pubDatePath.setNamespaceURIs(Map.of("ns", "https://mikanani.me/0.1/"));
 		pubDate = pubDatePath.selectSingleNode(itemNode).getText();
-		torrentUrl = itemNode.selectSingleNode("enclosure").valueOf("@name");
+		torrentUrl = itemNode.selectSingleNode("enclosure").valueOf("@url");
 		length = Long.parseLong(itemNode.selectSingleNode("enclosure").valueOf("@length"));
 	}
 }
