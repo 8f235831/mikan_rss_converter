@@ -43,10 +43,10 @@
         update rss_follows
         <set>
             <if test="rssSite != null">
-                rssSite = #{rssSite},
+                rss_site = #{rssSite},
             </if>
             <if test="regexFilter != null">
-                regexFilter = #{regexFilter},
+                regex_filter = #{regexFilter},
             </if>
             <if test="comment != null">
                 comment = #{comment},
