@@ -15,21 +15,5 @@ import java.io.InputStream;
 @Slf4j
 class ApplicationTests
 {
-	private static final String EXAMPLE_RSS_FILE_PATH =
-		"src/test/resources/example_rss.xml";
 
-	@Test
-	void testXmlParser() throws Exception
-	{
-		byte[] fileBytes;
-		try (InputStream inputStream = new FileInputStream(
-			EXAMPLE_RSS_FILE_PATH))
-		{
-			fileBytes = inputStream.readAllBytes();
-		}
-		String xmlContent = new String(fileBytes);
-		RssDocument document = new RssDocument(xmlContent);
-		String documentJson = JSON.toJSONString(document);
-		log.info("document: {}", documentJson);
-	}
 }
