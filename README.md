@@ -1,5 +1,7 @@
-# Mikan Rss Converter
+# 【Deprecated】Mikan Rss Converter
 为解决qBittorrent客户端访问蜜柑计划（ https://mikanani.me/ ）的RSS源时，访问不稳定、难以并发访问的问题，建立此项目。
+
+<del>项目完成后不到一周，</del>蜜柑计划已无法访问，本项目已失效。
 
 ## 项目概况
 项目基于SpringBoot建立了服务后端，基于Vue3设计了前端管理页面。前端资源合并在后端中，可一并部署。
